@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumi - Juego de Tablas Emocional</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://i.postimg.cc/D0sC4XYn/fondo-lumi-app.jpg') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .pregunta {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .boton {
+      display: inline-block;
+      background-color: #78c077;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      margin: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .boton:hover {
+      background-color: #5a9b63;
+    }
+    #resultado {
+      font-size: 22px;
+      margin-top: 20px;
+    }
+    #lumi-img {
+      width: 160px;
+      margin: 15px auto;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>¡Juguemos con Lumi!</h1>
+  <img id="lumi-img" src="https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png" alt="Lumi feliz" />
+  <div class="pregunta" id="pregunta"></div>
+  <div id="opciones"></div>
+  <div id="resultado"></div>
+
+  <script>
+    const preguntas = [];
+    for (let t = 2; t <= 4; t++) {
+      for (let i = 1; i <= 10; i++) {
+        preguntas.push({ pregunta: `${t} × ${i}`, respuesta: t * i });
+      }
+    }
+
+    const lumiImg = document.getElementById('lumi-img');
+    const preguntaElem = document.getElementById('pregunta');
+    const opcionesElem = document.getElementById('opciones');
+    const resultadoElem = document.getElementById('resultado');
+    let indice = 0;
+
+    function mezclar(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function mostrarPregunta() {
+      resultadoElem.textContent = '';
+      lumiImg.src = "https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png";
+      lumiImg.style.transform = "scale(1)";
+      const actual = preguntas[indice];
+      preguntaElem.textContent = `¿Cuánto es ${actual.pregunta}?`;
+
+      const opciones = [actual.respuesta];
+      while (opciones.length < 4) {
+        let num = Math.floor(Math.random() * 40) + 1;
+        if (!opciones.includes(num)) {
+          opciones.push(num);
+        }
+      }
+
+      opcionesElem.innerHTML = '';
+      mezclar(opciones).forEach(num => {
+        const btn = document.createElement('button');
+        btn.className = 'boton';
+        btn.textContent = num;
+        btn.onclick = () => verificarRespuesta(num, actual.respuesta);
+        opcionesElem.appendChild(btn);
+      });
+    }
+
+    function verificarRespuesta(seleccionada, correcta) {
+      if (seleccionada === correcta) {
+        resultadoElem.textContent = "¡Correcto! 🎉";
+        lumiImg.src = "https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png";
+        lumiImg.style.transform = "scale(1.1)";
+      } else {
+        resultadoElem.textContent = "Uy... no es esa. ¡Intenta de nuevo!";
+        lumiImg.src = "https://i.postimg.cc/tTDkrwGS/lumi-confundido.png";
+        lumiImg.style.transform = "scale(0.9)";
+      }
+      setTimeout(() => {
+        indice = (indice + 1) % preguntas.length;
+        mostrarPregunta();
+      }, 1600);
+    }
+
+    mostrarPregunta();
+  </script>
+</body>
+</html>
