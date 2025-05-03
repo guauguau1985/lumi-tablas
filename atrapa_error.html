@@ -2,132 +2,115 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atrapa el Error - Lumi</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0fdf4;
-      margin: 0;
-      padding: 0;
-      text-align: center;
+    body { font-family: Arial, sans-serif; background: #f0fdf4; margin: 0; padding: 0; text-align: center; }
+    .header { background: #bbf7d0; padding: 20px; }
+    .header h1 { color: #047857; margin: 0; }
+    .header p { margin: 5px 0 0; color: #065f46; }
+    .game { padding: 20px; }
+    .lumi-dialog { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    .lumi-dialog img { width: 80px; }
+    .lumi-dialog .text { background: #d1fae5; padding: 10px 15px; border-radius: 10px; max-width: 300px; }
+    .contador { font-size: 18px; margin-bottom: 10px; color: #065f46; }
+    .circuito { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+    .bloque { 
+      width: 100px; height: 40px; 
+      background: #a7f3d0; border: 2px solid #34d399; border-radius: 5px; 
+      display: flex; align-items: center; justify-content: center; 
+      cursor: pointer; transition: background 0.3s; 
     }
-    .encabezado {
-      background-color: #bbf7d0;
-      padding: 20px;
+    .bloque.correct { background: #bbf7d0; }
+    .bloque.wrong { background: #fecaca; }
+    .flecha { font-size: 24px; color: #34d399; }
+    .mensaje { font-size: 20px; margin: 15px; }
+    .controls { margin-top: 20px; }
+    .controls button {
+      background: #34d399; color: white; border: none; padding: 10px 20px;
+      border-radius: 5px; font-size: 16px; cursor: pointer;
     }
-    h1 {
-      color: #047857;
-    }
-    .juego {
-      padding: 20px;
-    }
-    .lumi-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    .lumi-box img {
-      width: 80px;
-    }
-    .lumi-dialogo {
-      background-color: #d1fae5;
-      padding: 10px 15px;
-      border-radius: 10px;
-      max-width: 300px;
-    }
-    .bloques {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .bloque {
-      padding: 15px 20px;
-      background-color: #a7f3d0;
-      border: 2px solid #34d399;
-      border-radius: 8px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .bloque:hover {
-      background-color: #6ee7b7;
-    }
-    .mensaje {
-      margin-top: 20px;
-      font-size: 20px;
-    }
+    .controls button:hover { background: #059669; }
   </style>
 </head>
 <body>
-  <div class="encabezado">
+
+  <div class="header">
     <h1>🔧 Atrapa el Error</h1>
-    <p>Ayuda a Lumi a encontrar el paso incorrecto en el circuito 🧠</p>
+    <p>Encuentra el paso incorrecto en el circuito</p>
   </div>
 
-  <div class="juego">
-    <div class="lumi-box">
-      <img src="https://i.postimg.cc/4yKKSc5W/lumi-confundido.png" alt="Lumi confundido">
-      <div class="lumi-dialogo">¡Oh no! Algo no funciona... ¿Puedes encontrar el error?</div>
+  <div class="game">
+    <div class="lumi-dialog">
+      <img src="img/lumi_confundido.png" alt="Lumi confundido">
+      <div class="text">¡Oh no! Algo no funciona. Toca el paso equivocado.</div>
     </div>
-
-    <div class="bloques" id="bloques"></div>
+    <div class="contador">Ejercicio <span id="num">1</span> de <span id="total">0</span></div>
+    <div class="circuito" id="circuito"></div>
     <div class="mensaje" id="mensaje"></div>
+    <div class="controls">
+      <button onclick="reiniciar()">Reiniciar</button>
+    </div>
   </div>
 
   <script>
-    const bloques = document.getElementById('bloques');
-    const mensaje = document.getElementById('mensaje');
-
     const ejercicios = [
-      {
-        codigo: ['mover adelante', 'girar izquierda', 'girar derecha', 'girar derecha', 'mover adelante'],
-        errorIndex: 1
-      },
-      {
-        codigo: ['mover adelante', 'mover adelante', 'girar izquierda', 'mover adelante', 'girar izquierda'],
-        errorIndex: 4
-      },
-      {
-        codigo: ['mover adelante', 'girar derecha', 'mover adelante', 'girar derecha', 'girar derecha'],
-        errorIndex: 4
-      }
+      { codigo: ['→', '↑', '→', '←', '↓'], labels: ['mover →','mover ↑','mover →','mover ←','mover ↓'], error: 1 },
+      { codigo: ['→', '→', '↑', '↓', '←'], labels: ['mover →','mover →','mover ↑','mover ↓','mover ←'], error: 4 },
+      { codigo: ['↑', '→', '↓', '→', '←'], labels: ['mover ↑','mover →','mover ↓','mover →','mover ←'], error: 2 }
     ];
+    let idx = 0;
 
-    let actual = 0;
+    const totalElem = document.getElementById('total');
+    const numElem = document.getElementById('num');
+    const circuitoEl = document.getElementById('circuito');
+    const mensajeEl = document.getElementById('mensaje');
 
-    function cargarEjercicio() {
-      mensaje.textContent = '';
-      bloques.innerHTML = '';
-      const ejercicio = ejercicios[actual];
-      ejercicio.codigo.forEach((linea, i) => {
+    function cargar() {
+      mensajeEl.textContent = '';
+      const ex = ejercicios[idx];
+      totalElem.textContent = ejercicios.length;
+      numElem.textContent = idx+1;
+      circuitoEl.innerHTML = '';
+      ex.codigo.forEach((flecha, i) => {
         const div = document.createElement('div');
         div.className = 'bloque';
-        div.textContent = linea;
-        div.onclick = () => verificar(i, ejercicio.errorIndex);
-        bloques.appendChild(div);
+        div.textContent = flecha;
+        div.title = ex.labels[i];
+        div.onclick = () => evaluar(i);
+        circuitoEl.appendChild(div);
+        if (i < ex.codigo.length-1) {
+          const span = document.createElement('span');
+          span.className = 'flecha';
+          span.textContent = '→';
+          circuitoEl.appendChild(span);
+        }
       });
     }
 
-    function verificar(index, correcto) {
-      if (index === correcto) {
-        mensaje.textContent = "✅ ¡Correcto! Encontraste el error.";
-        setTimeout(() => {
-          actual = (actual + 1) % ejercicios.length;
-          cargarEjercicio();
-        }, 2000);
-      } else {
-        mensaje.textContent = "❌ Intenta de nuevo. Ese paso no es el error.";
-      }
+    function evaluar(i) {
+      const ex = ejercicios[idx];
+      const bloques = circuitoEl.querySelectorAll('.bloque');
+      bloques[i].classList.add(i===ex.error ? 'correct' : 'wrong');
+      mensajeEl.textContent = i===ex.error ? '✅ Correcto!' : '❌ Ese no es el error.';
+      setTimeout(() => {
+        if (i===ex.error) {
+          idx = (idx + 1) % ejercicios.length;
+        }
+        cargar();
+      }, 1500);
     }
 
-    cargarEjercicio();
+    function reiniciar() {
+      idx = 0;
+      cargar();
+    }
+
+    cargar();
   </script>
+
 </body>
 </html>
+
 
