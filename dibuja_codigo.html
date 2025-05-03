@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dibuja con Código</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fdf2f8;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #9d174d;
+    }
+    canvas {
+      background-color: #fff1f2;
+      border: 2px solid #f472b6;
+      margin: 20px auto;
+      display: block;
+    }
+    .controls {
+      margin: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      background-color: #ec4899;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #db2777;
+    }
+    .comandos {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Dibuja con Código</h1>
+  <p>Haz que Lumi dibuje una figura usando comandos</p>
+
+  <canvas id="lienzo" width="300" height="300"></canvas>
+
+  <div class="controls">
+    <button onclick="addCmd('adelante')">Adelante</button>
+    <button onclick="addCmd('girar')">Girar</button>
+    <button onclick="ejecutar()">Ejecutar</button>
+    <button onclick="reset()">Reiniciar</button>
+  </div>
+
+  <div class="comandos" id="comandos"></div>
+
+  <script>
+    const canvas = document.getElementById("lienzo");
+    const ctx = canvas.getContext("2d");
+    let x = 150, y = 150;
+    let angulo = 0;
+    let comandos = [];
+
+    function addCmd(cmd) {
+      comandos.push(cmd);
+      document.getElementById("comandos").textContent = "Comandos: " + comandos.join(", ");
+    }
+
+    function ejecutar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      x = 150; y = 150; angulo = 0;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      for (let cmd of comandos) {
+        if (cmd === 'adelante') {
+          x += 30 * Math.cos(angulo * Math.PI / 180);
+          y += 30 * Math.sin(angulo * Math.PI / 180);
+          ctx.lineTo(x, y);
+        } else if (cmd === 'girar') {
+          angulo += 90;
+        }
+      }
+      ctx.strokeStyle = "#db2777";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function reset() {
+      comandos = [];
+      document.getElementById("comandos").textContent = "";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  </script>
+</body>
+</html>

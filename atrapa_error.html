@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atrapa el Error</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefce8;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #713f12;
+    }
+    .bloques {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .bloque {
+      padding: 15px 20px;
+      margin: 10px;
+      background-color: #fde68a;
+      border: 2px solid #facc15;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .bloque:hover {
+      background-color: #fcd34d;
+    }
+    .mensaje {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔧 Atrapa el Error</h1>
+  <p>Haz clic en el bloque que contiene el error</p>
+
+  <div class="bloques" id="bloques"></div>
+  <div class="mensaje" id="mensaje"></div>
+
+  <script>
+    const bloques = document.getElementById('bloques');
+    const mensaje = document.getElementById('mensaje');
+
+    const errores = [
+      {
+        codigo: ['mover adelante', 'girar izquierda', 'girar derecha', 'girar derecha', 'mover adelante'],
+        errorIndex: 1
+      },
+      {
+        codigo: ['mover adelante', 'mover adelante', 'girar izquierda', 'mover adelante', 'girar izquierda'],
+        errorIndex: 4
+      },
+      {
+        codigo: ['mover adelante', 'girar derecha', 'mover adelante', 'girar derecha', 'girar derecha'],
+        errorIndex: 4
+      }
+    ];
+
+    let actual = 0;
+
+    function cargarEjercicio() {
+      mensaje.textContent = '';
+      bloques.innerHTML = '';
+      const ejercicio = errores[actual];
+      ejercicio.codigo.forEach((linea, i) => {
+        const div = document.createElement('div');
+        div.className = 'bloque';
+        div.textContent = linea;
+        div.onclick = () => verificar(i, ejercicio.errorIndex);
+        bloques.appendChild(div);
+      });
+    }
+
+    function verificar(index, correcto) {
+      if (index === correcto) {
+        mensaje.textContent = "✅ ¡Correcto! Encontraste el error.";
+      } else {
+        mensaje.textContent = "❌ Intenta nuevamente, ese no es el error.";
+        return;
+      }
+
+      setTimeout(() => {
+        actual = (actual + 1) % errores.length;
+        cargarEjercicio();
+      }, 2000);
+    }
+
+    cargarEjercicio();
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ordena el Código</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef2ff;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #3730a3;
+    }
+    .instrucciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .bloque {
+      padding: 12px 18px;
+      margin: 8px;
+      background-color: #c7d2fe;
+      border: 2px solid #818cf8;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: grab;
+    }
+    .mensaje {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-size: 16px;
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧩 Ordena el Código</h1>
+  <p>Arrastra las instrucciones para que Lumi llegue al árbol 🌳</p>
+
+  <div class="instrucciones" id="contenedor" draggable="true"></div>
+  <button onclick="verificarOrden()">Verificar</button>
+  <div class="mensaje" id="mensaje"></div>
+
+  <script>
+    const correcto = ['mover adelante', 'mover adelante', 'girar derecha', 'mover adelante'];
+    let bloques = [];
+
+    function cargar() {
+      bloques = [...correcto].sort(() => Math.random() - 0.5);
+      render();
+    }
+
+    function render() {
+      const contenedor = document.getElementById('contenedor');
+      contenedor.innerHTML = '';
+      bloques.forEach((text, index) => {
+        const div = document.createElement('div');
+        div.className = 'bloque';
+        div.textContent = text;
+        div.draggable = true;
+        div.ondragstart = e => {
+          e.dataTransfer.setData("text/plain", index);
+        };
+        div.ondragover = e => e.preventDefault();
+        div.ondrop = e => {
+          const desde = e.dataTransfer.getData("text");
+          const temp = bloques[desde];
+          bloques[desde] = bloques[index];
+          bloques[index] = temp;
+          render();
+        };
+        contenedor.appendChild(div);
+      });
+    }
+
+    function verificarOrden() {
+      const mensaje = document.getElementById('mensaje');
+      const esCorrecto = JSON.stringify(bloques) === JSON.stringify(correcto);
+      mensaje.textContent = esCorrecto
+        ? '✅ ¡Perfecto! El código está en orden.'
+        : '❌ Algo no está en orden. Intenta de nuevo.';
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
