@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Camino de Comandos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0fdf4;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #065f46;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-template-rows: repeat(5, 60px);
+      gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background-color: #d1fae5;
+      border: 2px solid #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      position: relative;
+    }
+    .lumi {
+      width: 50px;
+      position: absolute;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      background-color: #34d399;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #059669;
+    }
+    .sequence {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧭 Camino de Comandos</h1>
+  <p>Ayuda a Lumi a llegar al 🌳 usando comandos</p>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="controls">
+    <button onclick="addCommand('↑')">Arriba</button>
+    <button onclick="addCommand('↓')">Abajo</button>
+    <button onclick="addCommand('←')">Izquierda</button>
+    <button onclick="addCommand('→')">Derecha</button>
+    <button onclick="runCommands()">Ejecutar</button>
+    <button onclick="reset()">Reiniciar</button>
+  </div>
+
+  <div class="sequence" id="sequence"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const sequenceEl = document.getElementById('sequence');
+    let sequence = [];
+    let lumiPosition = 0;
+
+    const cells = Array(25).fill('');
+    cells[0] = 'L'; // Lumi
+    cells[24] = '🌳'; // Meta
+
+    function drawGrid() {
+      grid.innerHTML = '';
+      cells.forEach((cell, i) => {
+        const div = document.createElement('div');
+        div.className = 'cell';
+        if (i === lumiPosition) {
+          const img = document.createElement('img');
+          img.src = 'https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png';
+          img.className = 'lumi';
+          div.appendChild(img);
+        } else {
+          div.textContent = cell;
+        }
+        grid.appendChild(div);
+      });
+    }
+
+    function addCommand(cmd) {
+      sequence.push(cmd);
+      sequenceEl.textContent = "Secuencia: " + sequence.join(' ');
+    }
+
+    function runCommands() {
+      let pos = lumiPosition;
+      for (let cmd of sequence) {
+        if (cmd === '↑' && pos >= 5) pos -= 5;
+        if (cmd === '↓' && pos < 20) pos += 5;
+        if (cmd === '←' && pos % 5 !== 0) pos -= 1;
+        if (cmd === '→' && pos % 5 !== 4) pos += 1;
+      }
+      lumiPosition = pos;
+      drawGrid();
+      if (lumiPosition === 24) {
+        alert("¡Bien hecho! Lumi llegó al parque 🌳");
+      } else {
+        alert("Aún no llegamos, intenta ajustar los comandos.");
+      }
+    }
+
+    function reset() {
+      sequence = [];
+      lumiPosition = 0;
+      sequenceEl.textContent = '';
+      drawGrid();
+    }
+
+    drawGrid();
+  </script>
+</body>
+</html>

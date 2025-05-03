@@ -2,16 +2,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumi - Tablas con emociones</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lumi - Juego de Tablas</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: url('/mnt/data/295c9850-428b-4a11-aedf-2018d297dd39.png') no-repeat center center fixed;
+      background: url('img/fondo.png') no-repeat center center fixed;
       background-size: cover;
       text-align: center;
       padding: 20px;
+      margin: 0;
     }
     h1 {
       color: #ffffff;
@@ -54,7 +55,7 @@
 <body>
 
   <h1>¡Juguemos con Lumi!</h1>
-  <img id="lumi-img" src="https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png" alt="Lumi feliz" />
+  <img id="lumi-img" src="img/lumi_feliz.png" alt="Lumi" />
   <div class="pregunta" id="pregunta"></div>
   <div id="opciones"></div>
   <div id="resultado"></div>
@@ -79,7 +80,7 @@
 
     function mostrarPregunta() {
       resultadoElem.textContent = '';
-      lumiImg.src = 'https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png';
+      lumiImg.src = 'img/lumi_feliz.png';
       lumiImg.style.transform = "scale(1)";
       const actual = preguntas[indice];
       preguntaElem.textContent = `¿Cuánto es ${actual.pregunta}?`;
@@ -105,11 +106,11 @@
     function verificarRespuesta(seleccionada, correcta) {
       if (seleccionada === correcta) {
         resultadoElem.textContent = "¡Correcto!";
-        lumiImg.src = 'https://i.postimg.cc/CK4t1zX4/fd5b115f-a4a0-4c71-9a7a-2c65f993927e.png';
+        lumiImg.src = 'img/lumi_feliz.png';
         lumiImg.style.transform = "scale(1.1)";
       } else {
         resultadoElem.textContent = "Uy... no es esa. ¡Intenta de nuevo!";
-        lumiImg.src = 'https://i.postimg.cc/zvTxGtrJ/lumi-confundida.png';
+        lumiImg.src = 'img/lumi_confundido.png';
         lumiImg.style.transform = "scale(0.9)";
       }
       setTimeout(() => {
